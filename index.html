@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>風之帳房｜吉普力風記帳</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">風之帳房</p>
+          <h1>把每天的風景，記在帳上</h1>
+          <p class="subtitle">
+            記錄收入與支出，保留當下的時間與品項，依月份與年份看見剩餘可用金額。
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="stat">
+            <span>目前剩餘可用金額</span>
+            <strong id="overall-balance">NT$ 0</strong>
+          </div>
+          <div class="stat">
+            <span>本次選取期間</span>
+            <strong id="period-balance">NT$ 0</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="panel form-panel">
+          <h2>新增記帳</h2>
+          <form id="entry-form">
+            <label>
+              品項
+              <input type="text" id="item-input" placeholder="例如：早餐、薪水、車票" required />
+            </label>
+            <label>
+              金額
+              <input type="number" id="amount-input" min="0" step="1" placeholder="輸入金額" required />
+            </label>
+            <label>
+              類型
+              <div class="segmented">
+                <label><input type="radio" name="type" value="income" checked />收入</label>
+                <label><input type="radio" name="type" value="expense" />支出</label>
+              </div>
+            </label>
+            <label>
+              時間
+              <input type="datetime-local" id="time-input" />
+            </label>
+            <button type="submit" class="primary">加入清單</button>
+          </form>
+        </section>
+
+        <section class="panel filter-panel">
+          <h2>索引與篩選</h2>
+          <div class="filters">
+            <label>
+              年份
+              <select id="year-filter"></select>
+            </label>
+            <label>
+              月份
+              <select id="month-filter"></select>
+            </label>
+            <label>
+              品項搜尋
+              <input type="text" id="query-input" placeholder="輸入關鍵字" />
+            </label>
+            <label>
+              排序
+              <select id="sort-filter">
+                <option value="time_desc">時間新到舊</option>
+                <option value="time_asc">時間舊到新</option>
+                <option value="item_asc">品項 A → Z</option>
+                <option value="item_desc">品項 Z → A</option>
+              </select>
+            </label>
+          </div>
+          <div class="summary">
+            <div>
+              <span>期間收入</span>
+              <strong id="period-income">NT$ 0</strong>
+            </div>
+            <div>
+              <span>期間支出</span>
+              <strong id="period-expense">NT$ 0</strong>
+            </div>
+            <div>
+              <span>期間剩餘</span>
+              <strong id="period-balance-2">NT$ 0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel list-panel">
+          <div class="list-header">
+            <h2>記帳清單</h2>
+            <button id="clear-btn" class="ghost">清空全部</button>
+          </div>
+          <div id="entry-list" class="entry-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
