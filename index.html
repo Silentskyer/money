@@ -108,7 +108,7 @@
       </main>
     </div>
 
-    <script src="supabase-config.js?v=20260317-2"></script>
+    <script src="supabase-config.js?v=20260317-3"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       const statusEl = document.getElementById("status");
@@ -117,7 +117,18 @@
         statusEl.className = "status visible error";
       }
     </script>
-    <script src="app.js?v=20260317-2"></script>
+    <script
+      src="app.js?v=20260317-3"
+      onerror="window.__APP_LOAD_ERROR__=true;var el=document.getElementById('status'); if(el){ el.textContent='Failed to load app.js'; el.className='status visible error'; }"
+    ></script>
+    <script>
+      if (!window.__APP_LOADED__) {
+        const el = document.getElementById("status");
+        if (el) {
+          el.textContent = "app.js did not run (parse/runtime error).";
+          el.className = "status visible error";
+        }
+      }
+    </script>
   </body>
 </html>
-

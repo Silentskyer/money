@@ -1,4 +1,4 @@
-﻿const APP_VERSION = "2026-03-17-2";\nconst STORAGE_KEY = "ghibli-budget-entries";
+﻿window.__APP_LOADED__ = true;\nconst APP_VERSION = "2026-03-17-2";\nconst STORAGE_KEY = "ghibli-budget-entries";
 const CLIENT_ID_KEY = "ghibli-budget-client-id";
 const SUPABASE_TABLE = "entries";
 
@@ -196,10 +196,10 @@ const ensureFilterOptions = (entries) => {
     }
   };
 
-  buildSelect(yearFilter, sortedYears, "全部年份");
+  buildSelect(yearFilter, sortedYears, "All years");
 
   const months = Array.from({ length: 12 }, (_, index) => index + 1);
-  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "全部月份");
+  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "All months");
 };
 
 const computeTotals = (entries) => {
@@ -264,7 +264,7 @@ const renderEntries = (entries) => {
     const meta = document.createElement("div");
     meta.className = "entry-meta";
     meta.innerHTML = `<span class="badge ${entry.type === "expense" ? "expense" : ""}">
-      ${entry.type === "income" ? "收入" : "支出"}
+      ${entry.type === "income" ? "Income" : "Expense"}
     </span> ${formatDate(entry.time)}`;
 
     info.appendChild(title);
@@ -279,7 +279,7 @@ const renderEntries = (entries) => {
 
     const del = document.createElement("button");
     del.className = "ghost";
-    del.textContent = "刪除";
+    del.textContent = "Delete";
     del.addEventListener("click", async () => {
       await store.remove(entry.id);
       await refresh();
@@ -351,6 +351,7 @@ clearBtn.addEventListener("click", async () => {
 
 timeInput.value = getNowLocalInput();
 void refresh();
+
 
 
 
