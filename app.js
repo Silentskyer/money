@@ -104,7 +104,7 @@ const createSupabaseStore = (client) => {
         .order("time", { ascending: false });
       if (error) {
         console.error("Supabase list error:", error);
-        setStatus(`Supabase 讀取失敗：${error.message}`, "error");
+        setStatus(`Supabase read failed: ${error.message}`, "error");
         return [];
       }
       clearStatus();
@@ -118,7 +118,7 @@ const createSupabaseStore = (client) => {
       const { error } = await client.from(SUPABASE_TABLE).insert(payload);
       if (error) {
         console.error("Supabase insert error:", error);
-        setStatus(`Supabase 儲存失敗：${error.message}`, "error");
+        setStatus(`Supabase save failed: ${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -132,7 +132,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase delete error:", error);
-        setStatus(`Supabase 刪除失敗：${error.message}`, "error");
+        setStatus(`Supabase delete failed: ${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -144,7 +144,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase clear error:", error);
-        setStatus(`Supabase 清除失敗：${error.message}`, "error");
+        setStatus(`Supabase clear failed: ${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -155,9 +155,9 @@ const createSupabaseStore = (client) => {
 const store = supabaseClient ? createSupabaseStore(supabaseClient) : createLocalStore();
 
 if (supabaseClient) {
-  setStatus("已連線 Supabase，正在讀取資料。", "success");
+  setStatus("Supabase connected, loading data.", "success");
 } else {
-  setStatus("目前使用本機儲存（尚未連線 Supabase）。", "info");
+  setStatus("Using local storage, Supabase not connected.", "info");
 }
 
 const getNowLocalInput = () => {
@@ -351,6 +351,7 @@ clearBtn.addEventListener("click", async () => {
 
 timeInput.value = getNowLocalInput();
 void refresh();
+
 
 
 
