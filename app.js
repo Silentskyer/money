@@ -344,12 +344,13 @@ form.addEventListener("submit", async (event) => {
 });
 
 clearBtn.addEventListener("click", async () => {
-  if (!confirm("蝣箏?閬?蝛箏?刻?撣喟???嚗?)) return;
+  if (!confirm("Are you sure you want to clear all entries?")) return;
   await store.clear();
   await refresh();
 });
 
 timeInput.value = getNowLocalInput();
 void refresh();
+
 
 
