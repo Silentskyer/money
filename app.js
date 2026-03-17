@@ -1,4 +1,23 @@
 const STORAGE_KEY = "ghibli-budget-entries";
+const CLIENT_ID_KEY = "ghibli-budget-client-id";
+const SUPABASE_TABLE = "entries";
+
+const getClientId = () => {
+  let id = localStorage.getItem(CLIENT_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(CLIENT_ID_KEY, id);
+  }
+  return id;
+};
+
+const supabaseConfig = window.SUPABASE_CONFIG || {};
+const supabaseAvailable = Boolean(
+  window.supabase && supabaseConfig.url && supabaseConfig.anonKey
+);
+const supabaseClient = supabaseAvailable
+  ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey)
+  : null;
 
 const form = document.getElementById("entry-form");
 const itemInput = document.getElementById("item-input");
@@ -22,7 +41,7 @@ const formatCurrency = (value) =>
 
 const formatDate = (iso) => {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "未指定時間";
+  if (Number.isNaN(date.getTime())) return "?��?定�???;
   return date.toLocaleString("zh-TW", {
     year: "numeric",
     month: "2-digit",
@@ -32,14 +51,84 @@ const formatDate = (iso) => {
   });
 };
 
-const loadEntries = () => {
+const loadEntriesFromLocal = () => {
   const raw = localStorage.getItem(STORAGE_KEY);
   return raw ? JSON.parse(raw) : [];
 };
 
-const saveEntries = (entries) => {
+const saveEntriesToLocal = (entries) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 };
+
+const createLocalStore = () => ({
+  async list() {
+    return loadEntriesFromLocal();
+  },
+  async insert(entry) {
+    const entries = loadEntriesFromLocal();
+    entries.unshift(entry);
+    saveEntriesToLocal(entries);
+    return entry;
+  },
+  async remove(id) {
+    const entries = loadEntriesFromLocal();
+    const next = entries.filter((item) => item.id !== id);
+    saveEntriesToLocal(next);
+  },
+  async clear() {
+    saveEntriesToLocal([]);
+  },
+});
+
+const createSupabaseStore = (client) => {
+  const clientId = getClientId();
+  return {
+    async list() {
+      const { data, error } = await client
+        .from(SUPABASE_TABLE)
+        .select("id,item,amount,type,time")
+        .eq("client_id", clientId)
+        .order("time", { ascending: false });
+      if (error) {
+        console.error("Supabase list error:", error);
+        return [];
+      }
+      return (data || []).map((row) => ({
+        ...row,
+        amount: Number(row.amount),
+      }));
+    },
+    async insert(entry) {
+      const payload = { ...entry, client_id: clientId };
+      const { error } = await client.from(SUPABASE_TABLE).insert(payload);
+      if (error) {
+        console.error("Supabase insert error:", error);
+      }
+      return entry;
+    },
+    async remove(id) {
+      const { error } = await client
+        .from(SUPABASE_TABLE)
+        .delete()
+        .eq("id", id)
+        .eq("client_id", clientId);
+      if (error) {
+        console.error("Supabase delete error:", error);
+      }
+    },
+    async clear() {
+      const { error } = await client
+        .from(SUPABASE_TABLE)
+        .delete()
+        .eq("client_id", clientId);
+      if (error) {
+        console.error("Supabase clear error:", error);
+      }
+    },
+  };
+};
+
+const store = supabaseClient ? createSupabaseStore(supabaseClient) : createLocalStore();
 
 const getNowLocalInput = () => {
   const now = new Date();
@@ -77,10 +166,10 @@ const ensureFilterOptions = (entries) => {
     }
   };
 
-  buildSelect(yearFilter, sortedYears, "全部年份");
+  buildSelect(yearFilter, sortedYears, "?�部年份");
 
   const months = Array.from({ length: 12 }, (_, index) => index + 1);
-  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "全部月份");
+  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "?�部?�份");
 };
 
 const computeTotals = (entries) => {
@@ -125,7 +214,7 @@ const renderEntries = (entries) => {
   entryList.innerHTML = "";
   if (entries.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "目前沒有符合條件的記帳項目。";
+    empty.textContent = "?��?沒�?符�?條件?��?帳�??��?;
     empty.className = "entry-meta";
     entryList.appendChild(empty);
     return;
@@ -145,7 +234,7 @@ const renderEntries = (entries) => {
     const meta = document.createElement("div");
     meta.className = "entry-meta";
     meta.innerHTML = `<span class="badge ${entry.type === "expense" ? "expense" : ""}">
-      ${entry.type === "income" ? "收入" : "支出"}
+      ${entry.type === "income" ? "?�入" : "?�出"}
     </span> ${formatDate(entry.time)}`;
 
     info.appendChild(title);
@@ -160,12 +249,10 @@ const renderEntries = (entries) => {
 
     const del = document.createElement("button");
     del.className = "ghost";
-    del.textContent = "刪除";
-    del.addEventListener("click", () => {
-      const all = loadEntries();
-      const next = all.filter((item) => item.id !== entry.id);
-      saveEntries(next);
-      refresh();
+    del.textContent = "?�除";
+    del.addEventListener("click", async () => {
+      await store.remove(entry.id);
+      await refresh();
     });
 
     actions.appendChild(amount);
@@ -177,8 +264,8 @@ const renderEntries = (entries) => {
   });
 };
 
-const refresh = () => {
-  const entries = loadEntries();
+const refresh = async () => {
+  const entries = await store.list();
   ensureFilterOptions(entries);
 
   const overall = computeTotals(entries);
@@ -196,9 +283,8 @@ const refresh = () => {
   renderEntries(filtered);
 };
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const entries = loadEntries();
   const item = itemInput.value.trim();
   const amount = Number(amountInput.value);
   const type = form.elements.type.value;
@@ -208,28 +294,31 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  entries.unshift({
+  const entry = {
     id: crypto.randomUUID(),
     item,
     amount,
     type,
     time,
-  });
-  saveEntries(entries);
+  };
+  await store.insert(entry);
   form.reset();
   timeInput.value = getNowLocalInput();
-  refresh();
+  await refresh();
 });
 
 [yearFilter, monthFilter, queryInput, sortFilter].forEach((el) => {
-  el.addEventListener("input", refresh);
+  el.addEventListener("input", () => {
+    void refresh();
+  });
 });
 
-clearBtn.addEventListener("click", () => {
-  if (!confirm("確定要清空全部記帳紀錄嗎？")) return;
-  saveEntries([]);
-  refresh();
+clearBtn.addEventListener("click", async () => {
+  if (!confirm("確�?要�?空全?��?帳�??��?�?)) return;
+  await store.clear();
+  await refresh();
 });
 
 timeInput.value = getNowLocalInput();
-refresh();
+void refresh();
+
