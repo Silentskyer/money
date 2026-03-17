@@ -1,5 +1,5 @@
-﻿window.__APP_LOADED__ = true;
-const APP_VERSION = "20260317-5";
+window.__APP_LOADED__ = true;
+const APP_VERSION = "20260317-6";
 const STORAGE_KEY = "ghibli-budget-entries";
 const CLIENT_ID_KEY = "ghibli-budget-client-id";
 const SUPABASE_TABLE = "entries";
@@ -353,12 +353,3 @@ clearBtn.addEventListener("click", async () => {
 
 timeInput.value = getNowLocalInput();
 void refresh();
-
-
-
-
-
-
-
-
-
