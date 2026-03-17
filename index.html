@@ -108,17 +108,19 @@
       </main>
     </div>
 
-    <script src="supabase-config.js?v=20260317-4"></script>
+    <script src="supabase-config.js?v=20260317-6"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      const statusEl = document.getElementById("status");
-      if (statusEl) {
-        statusEl.textContent = "JavaScript 尚未載入或發生錯誤。";
-        statusEl.className = "status visible error";
-      }
+      (() => {
+        const el = document.getElementById("status");
+        if (el) {
+          el.textContent = "JavaScript 尚未載入或發生錯誤。";
+          el.className = "status visible error";
+        }
+      })();
     </script>
     <script
-      src="app.js?v=20260317-4"
+      src="app.js?v=20260317-6"
       onerror="window.__APP_LOAD_ERROR__=true;var el=document.getElementById('status'); if(el){ el.textContent='Failed to load app.js'; el.className='status visible error'; }"
     ></script>
     <script>
