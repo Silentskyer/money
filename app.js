@@ -1,4 +1,4 @@
-﻿window.__APP_LOADED__ = true;\nconst APP_VERSION = "2026-03-17-2";\nconst STORAGE_KEY = "ghibli-budget-entries";
+﻿window.__APP_LOADED__ = true;\nconst APP_VERSION = "2026-03-17-2";\nconst APP_VERSION = "20260317-4";\nconst STORAGE_KEY = "ghibli-budget-entries";
 const CLIENT_ID_KEY = "ghibli-budget-client-id";
 const SUPABASE_TABLE = "entries";
 
@@ -155,9 +155,9 @@ const createSupabaseStore = (client) => {
 const store = supabaseClient ? createSupabaseStore(supabaseClient) : createLocalStore();
 
 if (supabaseClient) {
-  setStatus("Supabase connected, loading data.", "success");
+  setStatus(`Supabase connected (v${APP_VERSION}), loading data.`, "success");
 } else {
-  setStatus("Using local storage, Supabase not connected.", "info");
+  setStatus(`Using local storage (v${APP_VERSION}), Supabase not connected.`, "info");
 }
 
 const getNowLocalInput = () => {
@@ -351,6 +351,7 @@ clearBtn.addEventListener("click", async () => {
 
 timeInput.value = getNowLocalInput();
 void refresh();
+
 
 
 
