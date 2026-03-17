@@ -29,12 +29,25 @@ const queryInput = document.getElementById("query-input");
 const sortFilter = document.getElementById("sort-filter");
 const entryList = document.getElementById("entry-list");
 const clearBtn = document.getElementById("clear-btn");
+const statusEl = document.getElementById("status");
 
 const overallBalanceEl = document.getElementById("overall-balance");
 const periodBalanceEl = document.getElementById("period-balance");
 const periodBalanceEl2 = document.getElementById("period-balance-2");
 const periodIncomeEl = document.getElementById("period-income");
 const periodExpenseEl = document.getElementById("period-expense");
+
+const setStatus = (message, level = "info") => {
+  if (!statusEl) return;
+  statusEl.textContent = message;
+  statusEl.className = `status visible ${level}`;
+};
+
+const clearStatus = () => {
+  if (!statusEl) return;
+  statusEl.textContent = "";
+  statusEl.className = "status";
+};
 
 const formatCurrency = (value) =>
   `NT$ ${value.toLocaleString("zh-Hant", { maximumFractionDigits: 0 })}`;
@@ -91,8 +104,10 @@ const createSupabaseStore = (client) => {
         .order("time", { ascending: false });
       if (error) {
         console.error("Supabase list error:", error);
+        setStatus(`Supabase 讀取失敗：${error.message}`, "error");
         return [];
       }
+      clearStatus();
       return (data || []).map((row) => ({
         ...row,
         amount: Number(row.amount),
@@ -103,6 +118,9 @@ const createSupabaseStore = (client) => {
       const { error } = await client.from(SUPABASE_TABLE).insert(payload);
       if (error) {
         console.error("Supabase insert error:", error);
+        setStatus(`Supabase 儲存失敗：${error.message}`, "error");
+      } else {
+        clearStatus();
       }
       return entry;
     },
@@ -114,6 +132,9 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase delete error:", error);
+        setStatus(`Supabase 刪除失敗：${error.message}`, "error");
+      } else {
+        clearStatus();
       }
     },
     async clear() {
@@ -123,12 +144,21 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase clear error:", error);
+        setStatus(`Supabase 清除失敗：${error.message}`, "error");
+      } else {
+        clearStatus();
       }
     },
   };
 };
 
 const store = supabaseClient ? createSupabaseStore(supabaseClient) : createLocalStore();
+
+if (supabaseClient) {
+  setStatus("已連線 Supabase，正在讀取資料。", "success");
+} else {
+  setStatus("目前使用本機儲存（尚未連線 Supabase）。", "info");
+}
 
 const getNowLocalInput = () => {
   const now = new Date();

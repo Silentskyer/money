@@ -99,6 +99,32 @@ h1 {
   backdrop-filter: blur(6px);
 }
 
+.status {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(90, 88, 83, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+  display: none;
+}
+
+.status.visible {
+  display: block;
+}
+
+.status.error {
+  border-color: rgba(230, 177, 168, 0.6);
+  background: rgba(230, 177, 168, 0.2);
+  color: #7a3b32;
+}
+
+.status.success {
+  border-color: rgba(159, 191, 154, 0.6);
+  background: rgba(159, 191, 154, 0.2);
+  color: #2f5a37;
+}
+
 .stat {
   display: grid;
   gap: 6px;

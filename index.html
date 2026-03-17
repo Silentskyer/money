@@ -1,40 +1,42 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>風之帳房｜吉普力風記帳</title>
+    <title>靈感記帳 | 收支小帳本</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="page">
       <header class="hero">
         <div class="hero-text">
-          <p class="eyebrow">風之帳房</p>
-          <h1>把每天的風景，記在帳上</h1>
+          <p class="eyebrow">靈感記帳</p>
+          <h1>把日常收支變得更有條理</h1>
           <p class="subtitle">
-            記錄收入與支出，保留當下的時間與品項，依月份與年份看見剩餘可用金額。
+            快速記錄收入與支出，清楚掌握每個時段的金流變化。
           </p>
         </div>
         <div class="hero-card">
           <div class="stat">
-            <span>目前剩餘可用金額</span>
+            <span>全部結餘</span>
             <strong id="overall-balance">NT$ 0</strong>
           </div>
           <div class="stat">
-            <span>本次選取期間</span>
+            <span>目前篩選結餘</span>
             <strong id="period-balance">NT$ 0</strong>
           </div>
         </div>
       </header>
+
+      <div id="status" class="status" role="alert" aria-live="polite"></div>
 
       <main class="content">
         <section class="panel form-panel">
           <h2>新增記帳</h2>
           <form id="entry-form">
             <label>
-              品項
-              <input type="text" id="item-input" placeholder="例如：早餐、薪水、車票" required />
+              項目
+              <input type="text" id="item-input" placeholder="例如：早餐、車票" required />
             </label>
             <label>
               金額
@@ -56,7 +58,7 @@
         </section>
 
         <section class="panel filter-panel">
-          <h2>索引與篩選</h2>
+          <h2>篩選與排序</h2>
           <div class="filters">
             <label>
               年份
@@ -67,7 +69,7 @@
               <select id="month-filter"></select>
             </label>
             <label>
-              品項搜尋
+              關鍵字
               <input type="text" id="query-input" placeholder="輸入關鍵字" />
             </label>
             <label>
@@ -75,22 +77,22 @@
               <select id="sort-filter">
                 <option value="time_desc">時間新到舊</option>
                 <option value="time_asc">時間舊到新</option>
-                <option value="item_asc">品項 A → Z</option>
-                <option value="item_desc">品項 Z → A</option>
+                <option value="item_asc">項目 A → Z</option>
+                <option value="item_desc">項目 Z → A</option>
               </select>
             </label>
           </div>
           <div class="summary">
             <div>
-              <span>期間收入</span>
+              <span>篩選收入</span>
               <strong id="period-income">NT$ 0</strong>
             </div>
             <div>
-              <span>期間支出</span>
+              <span>篩選支出</span>
               <strong id="period-expense">NT$ 0</strong>
             </div>
             <div>
-              <span>期間剩餘</span>
+              <span>篩選結餘</span>
               <strong id="period-balance-2">NT$ 0</strong>
             </div>
           </div>
