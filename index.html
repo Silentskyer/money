@@ -110,6 +110,13 @@
 
     <script src="supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const statusEl = document.getElementById("status");
+      if (statusEl) {
+        statusEl.textContent = "JavaScript 尚未載入或發生錯誤。";
+        statusEl.className = "status visible error";
+      }
+    </script>
     <script src="app.js"></script>
   </body>
 </html>
