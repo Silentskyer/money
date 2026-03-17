@@ -1,4 +1,4 @@
-const STORAGE_KEY = "ghibli-budget-entries";
+ï»¿const STORAGE_KEY = "ghibli-budget-entries";
 const CLIENT_ID_KEY = "ghibli-budget-client-id";
 const SUPABASE_TABLE = "entries";
 
@@ -41,7 +41,7 @@ const formatCurrency = (value) =>
 
 const formatDate = (iso) => {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "?ªæ?å®šæ???;
+  if (Number.isNaN(date.getTime())) return "Invalid date";
   return date.toLocaleString("zh-TW", {
     year: "numeric",
     month: "2-digit",
@@ -166,10 +166,10 @@ const ensureFilterOptions = (entries) => {
     }
   };
 
-  buildSelect(yearFilter, sortedYears, "?¨éƒ¨å¹´ä»½");
+  buildSelect(yearFilter, sortedYears, "?åˆ¸ï€¸æ’Ÿæ¸¯é¢");
 
   const months = Array.from({ length: 12 }, (_, index) => index + 1);
-  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "?¨éƒ¨?ˆä»½");
+  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "?åˆ¸ï€¸?ï…é¢");
 };
 
 const computeTotals = (entries) => {
@@ -214,7 +214,7 @@ const renderEntries = (entries) => {
   entryList.innerHTML = "";
   if (entries.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "?®å?æ²’æ?ç¬¦å?æ¢ä»¶?„è?å¸³é??®ã€?;
+    empty.textContent = "No entries yet.";
     empty.className = "entry-meta";
     entryList.appendChild(empty);
     return;
@@ -234,7 +234,7 @@ const renderEntries = (entries) => {
     const meta = document.createElement("div");
     meta.className = "entry-meta";
     meta.innerHTML = `<span class="badge ${entry.type === "expense" ? "expense" : ""}">
-      ${entry.type === "income" ? "?¶å…¥" : "?¯å‡º"}
+      ${entry.type === "income" ? "?å—…ï…¯" : "?è‡¬ïŠ¾"}
     </span> ${formatDate(entry.time)}`;
 
     info.appendChild(title);
@@ -249,7 +249,7 @@ const renderEntries = (entries) => {
 
     const del = document.createElement("button");
     del.className = "ghost";
-    del.textContent = "?ªé™¤";
+    del.textContent = "?èŠ·î¨’";
     del.addEventListener("click", async () => {
       await store.remove(entry.id);
       await refresh();
@@ -314,11 +314,12 @@ form.addEventListener("submit", async (event) => {
 });
 
 clearBtn.addEventListener("click", async () => {
-  if (!confirm("ç¢ºå?è¦æ?ç©ºå…¨?¨è?å¸³ç??„å?ï¼?)) return;
+  if (!confirm("è£ç®?é–¬î¼¼?è›ç®ï…²?åˆ»?æ’£å–Ÿ??ï„’?åš—?)) return;
   await store.clear();
   await refresh();
 });
 
 timeInput.value = getNowLocalInput();
 void refresh();
+
 
