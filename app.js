@@ -1,8 +1,13 @@
-window.__APP_LOADED__ = true;
-const APP_VERSION = "20260317-6";
+﻿window.__APP_LOADED__ = true;
+const APP_VERSION = "20260323-1";
 const STORAGE_KEY = "ghibli-budget-entries";
 const CLIENT_ID_KEY = "ghibli-budget-client-id";
 const SUPABASE_TABLE = "entries";
+const UNCATEGORIZED = "未分類";
+const CATEGORY_OPTIONS = {
+  income: ["薪資", "獎金", "接案", "投資", "退款", "其他收入"],
+  expense: ["食物", "交通", "娛樂", "購物", "居住", "醫療", "教育", "投資", "其他支出"],
+};
 
 const getClientId = () => {
   let id = localStorage.getItem(CLIENT_ID_KEY);
@@ -24,9 +29,11 @@ const supabaseClient = supabaseAvailable
 const form = document.getElementById("entry-form");
 const itemInput = document.getElementById("item-input");
 const amountInput = document.getElementById("amount-input");
+const categoryInput = document.getElementById("category-input");
 const timeInput = document.getElementById("time-input");
 const yearFilter = document.getElementById("year-filter");
 const monthFilter = document.getElementById("month-filter");
+const categoryFilter = document.getElementById("category-filter");
 const queryInput = document.getElementById("query-input");
 const sortFilter = document.getElementById("sort-filter");
 const entryList = document.getElementById("entry-list");
@@ -56,7 +63,7 @@ const formatCurrency = (value) =>
 
 const formatDate = (iso) => {
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "Invalid date";
+  if (Number.isNaN(date.getTime())) return "無效日期";
   return date.toLocaleString("zh-TW", {
     year: "numeric",
     month: "2-digit",
@@ -66,9 +73,57 @@ const formatDate = (iso) => {
   });
 };
 
+const normalizeCategory = (category) => {
+  if (!category || category === "Uncategorized") return UNCATEGORIZED;
+  return category;
+};
+
+const normalizeEntry = (entry) => ({
+  ...entry,
+  amount: Number(entry.amount),
+  category: normalizeCategory(entry.category),
+});
+
+const getTypeLabel = (type) => (type === "income" ? "收入" : "支出");
+
+const getDefaultCategory = (type) => CATEGORY_OPTIONS[type]?.[0] || UNCATEGORIZED;
+
+const setSelectOptions = (selectEl, options, { placeholder, selectedValue } = {}) => {
+  const current = selectedValue ?? selectEl.value;
+  selectEl.innerHTML = "";
+
+  if (placeholder) {
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = placeholder;
+    selectEl.appendChild(allOption);
+  }
+
+  options.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = String(value);
+    option.textContent = String(value);
+    selectEl.appendChild(option);
+  });
+
+  if (current && Array.from(selectEl.options).some((opt) => opt.value === current)) {
+    selectEl.value = current;
+  }
+};
+
+const refreshCategoryInput = (selectedCategory) => {
+  const type = form.elements.type.value;
+  const categories = CATEGORY_OPTIONS[type] || [UNCATEGORIZED];
+  const selectedValue =
+    selectedCategory && categories.includes(selectedCategory)
+      ? selectedCategory
+      : getDefaultCategory(type);
+  setSelectOptions(categoryInput, categories, { selectedValue });
+};
+
 const loadEntriesFromLocal = () => {
   const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
+  return raw ? JSON.parse(raw).map(normalizeEntry) : [];
 };
 
 const saveEntriesToLocal = (entries) => {
@@ -101,26 +156,23 @@ const createSupabaseStore = (client) => {
     async list() {
       const { data, error } = await client
         .from(SUPABASE_TABLE)
-        .select("id,item,amount,type,time")
+        .select("id,item,amount,type,time,category")
         .eq("client_id", clientId)
         .order("time", { ascending: false });
       if (error) {
         console.error("Supabase list error:", error);
-        setStatus(`Supabase read failed: ${error.message}`, "error");
+        setStatus(`Supabase 讀取失敗：${error.message}`, "error");
         return [];
       }
       clearStatus();
-      return (data || []).map((row) => ({
-        ...row,
-        amount: Number(row.amount),
-      }));
+      return (data || []).map(normalizeEntry);
     },
     async insert(entry) {
       const payload = { ...entry, client_id: clientId };
       const { error } = await client.from(SUPABASE_TABLE).insert(payload);
       if (error) {
         console.error("Supabase insert error:", error);
-        setStatus(`Supabase save failed: ${error.message}`, "error");
+        setStatus(`Supabase 儲存失敗：${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -134,7 +186,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase delete error:", error);
-        setStatus(`Supabase delete failed: ${error.message}`, "error");
+        setStatus(`Supabase 刪除失敗：${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -146,7 +198,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase clear error:", error);
-        setStatus(`Supabase clear failed: ${error.message}`, "error");
+        setStatus(`Supabase 清空失敗：${error.message}`, "error");
       } else {
         clearStatus();
       }
@@ -157,9 +209,9 @@ const createSupabaseStore = (client) => {
 const store = supabaseClient ? createSupabaseStore(supabaseClient) : createLocalStore();
 
 if (supabaseClient) {
-  setStatus(`Supabase connected (v${APP_VERSION}), loading data.`, "success");
+  setStatus(`已連線 Supabase（v${APP_VERSION}），正在讀取資料。`, "success");
 } else {
-  setStatus(`Using local storage (v${APP_VERSION}), Supabase not connected.`, "info");
+  setStatus(`目前使用本機儲存（v${APP_VERSION}），尚未連線 Supabase。`, "info");
 }
 
 const getNowLocalInput = () => {
@@ -172,6 +224,7 @@ const getNowLocalInput = () => {
 const parseFilters = () => ({
   year: yearFilter.value,
   month: monthFilter.value,
+  category: categoryFilter.value,
   query: queryInput.value.trim().toLowerCase(),
   sort: sortFilter.value,
 });
@@ -179,29 +232,16 @@ const parseFilters = () => ({
 const ensureFilterOptions = (entries) => {
   const years = new Set(entries.map((entry) => new Date(entry.time).getFullYear()));
   const sortedYears = Array.from(years).filter((y) => !Number.isNaN(y)).sort((a, b) => b - a);
+  const categories = Array.from(new Set(entries.map((entry) => normalizeCategory(entry.category)))).sort((a, b) =>
+    a.localeCompare(b, "zh-Hant")
+  );
 
-  const buildSelect = (selectEl, options, placeholder) => {
-    const current = selectEl.value;
-    selectEl.innerHTML = "";
-    const allOption = document.createElement("option");
-    allOption.value = "all";
-    allOption.textContent = placeholder;
-    selectEl.appendChild(allOption);
-    options.forEach((value) => {
-      const option = document.createElement("option");
-      option.value = String(value);
-      option.textContent = String(value);
-      selectEl.appendChild(option);
-    });
-    if (current && Array.from(selectEl.options).some((opt) => opt.value === current)) {
-      selectEl.value = current;
-    }
-  };
-
-  buildSelect(yearFilter, sortedYears, "All years");
-
+  setSelectOptions(yearFilter, sortedYears, { placeholder: "全部年份" });
   const months = Array.from({ length: 12 }, (_, index) => index + 1);
-  buildSelect(monthFilter, months.map((m) => String(m).padStart(2, "0")), "All months");
+  setSelectOptions(monthFilter, months.map((m) => String(m).padStart(2, "0")), {
+    placeholder: "全部月份",
+  });
+  setSelectOptions(categoryFilter, categories, { placeholder: "全部分類" });
 };
 
 const computeTotals = (entries) => {
@@ -219,13 +259,19 @@ const computeTotals = (entries) => {
 const applyFilters = (entries, filters) => {
   return entries
     .filter((entry) => {
-      if (filters.query && !entry.item.toLowerCase().includes(filters.query)) return false;
+      if (
+        filters.query &&
+        !`${entry.item} ${normalizeCategory(entry.category)}`.toLowerCase().includes(filters.query)
+      ) {
+        return false;
+      }
       const date = new Date(entry.time);
       if (filters.year !== "all" && date.getFullYear() !== Number(filters.year)) return false;
       if (filters.month !== "all") {
         const month = String(date.getMonth() + 1).padStart(2, "0");
         if (month !== filters.month) return false;
       }
+      if (filters.category !== "all" && normalizeCategory(entry.category) !== filters.category) return false;
       return true;
     })
     .sort((a, b) => {
@@ -246,7 +292,7 @@ const renderEntries = (entries) => {
   entryList.innerHTML = "";
   if (entries.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "No entries yet.";
+    empty.textContent = "目前還沒有記帳資料。";
     empty.className = "entry-meta";
     entryList.appendChild(empty);
     return;
@@ -266,8 +312,8 @@ const renderEntries = (entries) => {
     const meta = document.createElement("div");
     meta.className = "entry-meta";
     meta.innerHTML = `<span class="badge ${entry.type === "expense" ? "expense" : ""}">
-      ${entry.type === "income" ? "Income" : "Expense"}
-    </span> ${formatDate(entry.time)}`;
+      ${getTypeLabel(entry.type)}
+    </span> <span class="badge category-badge">${normalizeCategory(entry.category)}</span> ${formatDate(entry.time)}`;
 
     info.appendChild(title);
     info.appendChild(meta);
@@ -281,7 +327,7 @@ const renderEntries = (entries) => {
 
     const del = document.createElement("button");
     del.className = "ghost";
-    del.textContent = "Delete";
+    del.textContent = "刪除";
     del.addEventListener("click", async () => {
       await store.remove(entry.id);
       await refresh();
@@ -320,6 +366,7 @@ form.addEventListener("submit", async (event) => {
   const item = itemInput.value.trim();
   const amount = Number(amountInput.value);
   const type = form.elements.type.value;
+  const category = categoryInput.value || getDefaultCategory(type);
   const time = timeInput.value ? new Date(timeInput.value).toISOString() : new Date().toISOString();
 
   if (!item || Number.isNaN(amount) || amount <= 0) {
@@ -331,25 +378,34 @@ form.addEventListener("submit", async (event) => {
     item,
     amount,
     type,
+    category,
     time,
   };
   await store.insert(entry);
   form.reset();
+  refreshCategoryInput();
   timeInput.value = getNowLocalInput();
   await refresh();
 });
 
-[yearFilter, monthFilter, queryInput, sortFilter].forEach((el) => {
+Array.from(form.elements.type).forEach((radio) => {
+  radio.addEventListener("change", () => {
+    refreshCategoryInput();
+  });
+});
+
+[yearFilter, monthFilter, categoryFilter, queryInput, sortFilter].forEach((el) => {
   el.addEventListener("input", () => {
     void refresh();
   });
 });
 
 clearBtn.addEventListener("click", async () => {
-  if (!confirm("Are you sure you want to clear all entries?")) return;
+  if (!confirm("確定要清空全部記帳資料嗎？")) return;
   await store.clear();
   await refresh();
 });
 
+refreshCategoryInput();
 timeInput.value = getNowLocalInput();
 void refresh();

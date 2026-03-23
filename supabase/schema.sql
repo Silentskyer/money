@@ -1,11 +1,15 @@
-create table if not exists public.entries (
+﻿create table if not exists public.entries (
   id uuid primary key,
   client_id uuid not null,
   item text not null,
+  category text not null default 'Uncategorized',
   amount integer not null check (amount > 0),
   type text not null check (type in ('income', 'expense')),
   time timestamptz not null
 );
+
+alter table public.entries
+add column if not exists category text not null default 'Uncategorized';
 
 alter table public.entries enable row level security;
 

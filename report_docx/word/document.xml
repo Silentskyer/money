@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"
+  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+  xmlns:w10="urn:schemas-microsoft-com:office:word"
+  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
+  xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
+  xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"
+  xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"
+  xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
+  mc:Ignorable="w14 wp14">
+  <w:body>
+    <w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>記帳系統專案報告</w:t></w:r></w:p>
+<w:p><w:r><w:t>專案主題：靜態前端記帳系統整合 Supabase 與 Vercel 部署</w:t></w:r></w:p>
+<w:p><w:r><w:t>報告日期：2026-03-18</w:t></w:r></w:p>
+<w:p><w:r><w:t>本報告整理本專案從前端建置、資料庫整合、雲端部署到實際功能完成的整體流程，內容包含文字說明與圖像示意，適合作為成果報告或專題紀錄文件。</w:t></w:r></w:p>
+<w:p>
+  <w:r>
+    <w:drawing>
+      <wp:inline distT="0" distB="0" distL="0" distR="0"
+        xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+        <wp:extent cx="5842000" cy="3286125"/>
+        <wp:effectExtent l="0" t="0" r="0" b="0"/>
+        <wp:docPr id="10" name="?恍蝮質汗"/>
+        <wp:cNvGraphicFramePr>
+          <a:graphicFrameLocks noChangeAspect="1"
+            xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>
+        </wp:cNvGraphicFramePr>
+        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+            <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+              <pic:nvPicPr>
+                <pic:cNvPr id="0" name="?恍蝮質汗"/>
+                <pic:cNvPicPr/>
+              </pic:nvPicPr>
+              <pic:blipFill>
+                <a:blip r:embed="rId2" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
+                <a:stretch><a:fillRect/></a:stretch>
+              </pic:blipFill>
+              <pic:spPr>
+                <a:xfrm><a:off x="0" y="0"/><a:ext cx="5842000" cy="3286125"/></a:xfrm>
+                <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+              </pic:spPr>
+            </pic:pic>
+          </a:graphicData>
+        </a:graphic>
+      </wp:inline>
+    </w:drawing>
+  </w:r>
+</w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>一、專案簡介</w:t></w:r></w:p>
+<w:p><w:r><w:t>本專案是一個以 HTML、CSS 與 JavaScript 建立的記帳系統。使用者可以輸入收入與支出資料、瀏覽統計結果、依時間與關鍵字篩選資料，並將資料儲存在本機 localStorage 或 Supabase 雲端資料庫。</w:t></w:r></w:p>
+<w:p><w:r><w:t>專案的主要目標有三項。第一，建立一個操作簡單且介面清楚的記帳工具。第二，設計可切換的資料儲存模式，使系統同時支援本機與雲端。第三，完成 GitHub 與 Vercel 的部署流程，讓作品可以正式上線展示。</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>二、系統架構</w:t></w:r></w:p>
+<w:p><w:r><w:t>系統採用靜態前端架構。畫面由 index.html 負責結構，styles.css 負責視覺設計，app.js 負責資料操作與互動邏輯。當系統偵測到 Supabase 設定存在時，便將資料存入雲端資料表；若沒有設定，則自動切換為 localStorage 模式，確保本機端仍可正常使用。</w:t></w:r></w:p>
+<w:p><w:r><w:t>從部署流程來看，GitHub 用於程式碼版本管理，Vercel 負責建置與靜態網站發布，而 scripts/build.js 會在部署時將 SUPABASE_URL 與 SUPABASE_ANON_KEY 寫入前端設定檔，讓網站在正式環境中能夠連接正確的資料庫。</w:t></w:r></w:p>
+<w:p>
+  <w:r>
+    <w:drawing>
+      <wp:inline distT="0" distB="0" distL="0" distR="0"
+        xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+        <wp:extent cx="5842000" cy="3286125"/>
+        <wp:effectExtent l="0" t="0" r="0" b="0"/>
+        <wp:docPr id="11" name="蝟餌絞?嗆?"/>
+        <wp:cNvGraphicFramePr>
+          <a:graphicFrameLocks noChangeAspect="1"
+            xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>
+        </wp:cNvGraphicFramePr>
+        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+            <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+              <pic:nvPicPr>
+                <pic:cNvPr id="0" name="蝟餌絞?嗆?"/>
+                <pic:cNvPicPr/>
+              </pic:nvPicPr>
+              <pic:blipFill>
+                <a:blip r:embed="rId3" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
+                <a:stretch><a:fillRect/></a:stretch>
+              </pic:blipFill>
+              <pic:spPr>
+                <a:xfrm><a:off x="0" y="0"/><a:ext cx="5842000" cy="3286125"/></a:xfrm>
+                <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+              </pic:spPr>
+            </pic:pic>
+          </a:graphicData>
+        </a:graphic>
+      </wp:inline>
+    </w:drawing>
+  </w:r>
+</w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>三、建置與部署流程</w:t></w:r></w:p>
+<w:p><w:r><w:t>本專案的實際建置流程可分為六個步驟。首先，建立前端畫面與基本版型，完成輸入表單、統計卡片與清單區塊。接著，在 app.js 中加入新增、刪除、篩選與排序邏輯。第三步是建立 Supabase 資料表與政策設定，使系統具備雲端資料能力。第四步是撰寫 Vercel 建置腳本，於部署時注入環境變數。第五步是將程式碼推送至 GitHub。最後，將 GitHub 專案匯入 Vercel 完成部署。</w:t></w:r></w:p>
+<w:p><w:r><w:t>建置中使用的重要檔案包含 index.html、styles.css、app.js、supabase/schema.sql、supabase-config.js、scripts/build.js、vercel.json 與 SUPABASE_SETUP.md。這些檔案分別對應介面呈現、前端邏輯、資料表建立與部署設定。</w:t></w:r></w:p>
+<w:p>
+  <w:r>
+    <w:drawing>
+      <wp:inline distT="0" distB="0" distL="0" distR="0"
+        xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+        <wp:extent cx="5842000" cy="2555000"/>
+        <wp:effectExtent l="0" t="0" r="0" b="0"/>
+        <wp:docPr id="12" name="撱箇蔭瘚?"/>
+        <wp:cNvGraphicFramePr>
+          <a:graphicFrameLocks noChangeAspect="1"
+            xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/>
+        </wp:cNvGraphicFramePr>
+        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+            <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+              <pic:nvPicPr>
+                <pic:cNvPr id="0" name="撱箇蔭瘚?"/>
+                <pic:cNvPicPr/>
+              </pic:nvPicPr>
+              <pic:blipFill>
+                <a:blip r:embed="rId4" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
+                <a:stretch><a:fillRect/></a:stretch>
+              </pic:blipFill>
+              <pic:spPr>
+                <a:xfrm><a:off x="0" y="0"/><a:ext cx="5842000" cy="2555000"/></a:xfrm>
+                <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+              </pic:spPr>
+            </pic:pic>
+          </a:graphicData>
+        </a:graphic>
+      </wp:inline>
+    </w:drawing>
+  </w:r>
+</w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>四、資料庫與部署設定</w:t></w:r></w:p>
+<w:p><w:r><w:t>在 Supabase 部分，需先進入 SQL Editor 執行 supabase/schema.sql，建立 entries 資料表。資料表欄位包含 id、client_id、item、amount、type 與 time。之後再設定 Row Level Security 與相對應政策，讓前端可依需求進行讀寫。</w:t></w:r></w:p>
+<w:p><w:r><w:t>在 Vercel 部分，專案需要設定兩個環境變數：SUPABASE_URL 與 SUPABASE_ANON_KEY。建置時，這些值會由 scripts/build.js 注入到輸出目錄中的設定檔，讓部署後的網站可以正確連線至 Supabase。</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>五、實際功能說明</w:t></w:r></w:p>
+<w:p><w:r><w:t>本專案目前已完成以下實際功能。第一，使用者可以建立收入與支出記錄，並指定項目、金額與時間。第二，系統會即時計算總結餘、篩選後收入、篩選後支出與篩選後結餘。第三，篩選面板可依年份、月份、關鍵字與排序方式快速查找資料。第四，記帳清單支援單筆刪除與全部清空。第五，若 Supabase 設定完整，資料可同步寫入雲端；若未設定，系統則改用 localStorage。</w:t></w:r></w:p>
+<w:p><w:r><w:t>這些功能讓本專案不只是一個展示介面，也具備實際操作價值，適合作為前端串接雲端資料庫的教學作品與專案成果。</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>六、測試與問題排除</w:t></w:r></w:p>
+<w:p><w:r><w:t>專案在開發過程中曾遇到多項問題，例如 JavaScript 語法錯誤、瀏覽器快取導致舊版資源持續被載入，以及 Supabase 未成功寫入資料等。透過檢查 Console 訊息、調整資源版本、確認部署環境變數與檢視資料表政策後，問題已逐步排除。</w:t></w:r></w:p>
+<w:p><w:r><w:t>這些除錯過程也讓專案更穩定，並建立一套可複製的問題排查流程，對未來的前端部署與雲端整合具有參考價值。</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>七、結論</w:t></w:r></w:p>
+<w:p><w:r><w:t>整體而言，本專案已完成從介面設計、功能開發、資料庫整合到網站部署的完整流程。系統具備良好的擴充性，未來可加入登入驗證、每位使用者獨立資料、圖表分析或更完整的權限控制，進一步發展為更成熟的記帳平台。</w:t></w:r></w:p>
+
+    <w:sectPr>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>

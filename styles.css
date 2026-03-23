@@ -305,6 +305,10 @@ button {
   background: rgba(230, 177, 168, 0.5);
 }
 
+.category-badge {
+  background: rgba(243, 211, 138, 0.45);
+}
+
 .entry-amount {
   font-weight: 700;
   font-size: 1.1rem;
