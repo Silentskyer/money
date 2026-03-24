@@ -58,6 +58,13 @@ const clearStatus = () => {
   statusEl.className = "status";
 };
 
+const getSupabaseErrorMessage = (error, actionLabel) => {
+  if (error?.message?.includes("Could not find the table 'public.entries'")) {
+    return `Supabase ${actionLabel}失敗：找不到 public.entries，請到 Supabase SQL Editor 重新執行 supabase/schema.sql。`;
+  }
+  return `Supabase ${actionLabel}失敗：${error.message}`;
+};
+
 const formatCurrency = (value) =>
   `NT$ ${value.toLocaleString("zh-Hant", { maximumFractionDigits: 0 })}`;
 
@@ -161,7 +168,7 @@ const createSupabaseStore = (client) => {
         .order("time", { ascending: false });
       if (error) {
         console.error("Supabase list error:", error);
-        setStatus(`Supabase 讀取失敗：${error.message}`, "error");
+        setStatus(getSupabaseErrorMessage(error, "讀取"), "error");
         return [];
       }
       clearStatus();
@@ -172,7 +179,7 @@ const createSupabaseStore = (client) => {
       const { error } = await client.from(SUPABASE_TABLE).insert(payload);
       if (error) {
         console.error("Supabase insert error:", error);
-        setStatus(`Supabase 儲存失敗：${error.message}`, "error");
+        setStatus(getSupabaseErrorMessage(error, "儲存"), "error");
       } else {
         clearStatus();
       }
@@ -186,7 +193,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase delete error:", error);
-        setStatus(`Supabase 刪除失敗：${error.message}`, "error");
+        setStatus(getSupabaseErrorMessage(error, "刪除"), "error");
       } else {
         clearStatus();
       }
@@ -198,7 +205,7 @@ const createSupabaseStore = (client) => {
         .eq("client_id", clientId);
       if (error) {
         console.error("Supabase clear error:", error);
-        setStatus(`Supabase 清空失敗：${error.message}`, "error");
+        setStatus(getSupabaseErrorMessage(error, "清空"), "error");
       } else {
         clearStatus();
       }
